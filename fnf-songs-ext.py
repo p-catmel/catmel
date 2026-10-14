@@ -4,6 +4,7 @@ import re
 import os
 import sys
 from pathlib import Path
+from pydub import AudioSegment
 songcounter = 0
 while True:
     datapath = Path(input("modのデータのフルパスを入力してください"))
@@ -19,10 +20,10 @@ while True:
             break
     while True:
         try:
-            direct = int(input("フォルダごと持ってく場合は1を押してください"))
+            direct = int(input("instだけなら1、voiceだけなら2、フォルダごと持ってく場合は3、instとvoiceを一つのファイルにするなら4を押してください"))
         except:
             continue
-        if(direct == 0 or direct == 1):
+        if(direct == 1 or direct == 2 or direct == 3 or direct == 4):
             break
         else:
             continue
@@ -67,11 +68,20 @@ def songsfor(s,songspath,musicpass):
     global direct
     for fp in songspath.iterdir():
         if(fp.name == s):
-            if(direct == 1):
+            if(direct == 3):
                 shutil.copytree(fp,musicpass / f"---{songcounter}-{fp.name}")
                 return
             else:
-                mp = fp / "inst.ogg"
+                temp3 = "inst.ogg"
+                if(direct == 2 and os.path.isfile(fp / "voices.ogg")):
+                    temp3 = "voices.ogg"
+                if(direct == 4 and os.path.isfile(fp / "voices.ogg")):
+                    audio1 = AudioSegment.from_ogg(fp /"inst.ogg")
+                    audio2 = AudioSegment.from_ogg(fp /"voices.ogg")
+                    mixed = audio1.overlay(audio2)
+                    mixed.export(fp / "mixed.ogg",format="ogg")
+                    temp3 = "mixed.ogg"
+                mp = fp / temp3
                 shutil.copy(mp,musicpass / f"---{songcounter}-{fp.name}.ogg")
                 return
 def noweeksfor(musicpass):
