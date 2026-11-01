@@ -4,12 +4,11 @@ import re
 import os
 import sys
 from pathlib import Path
-from pydub import AudioSegment
 songcounter = 0
 while True:
     datapath = Path(input("modのデータのフルパスを入力してください"))
     if(not os.path.isdir(datapath)):
-        input("modのフォルダがありません。\n続行するにはなにかキーを押してください…")
+        input("modデータのフルパスがありません。\n続行するにはなにかキーを押してください…")
         continue
     while True:
         musicpass = Path(input("移動先フォルダのフルパスを入力してください"))
@@ -27,10 +26,17 @@ while True:
             break
         else:
             continue
+    replace = input("フォルダ名に入っていたらスペースに置き換える文字は？\n（なければそのままenterキーを押してください）")
     temp2 = "いいえ"
     if(direct == 1):
-        temp2 = "はい"
-    ok = input(f"ーーーーーーーー\nmodのフルパス:{datapath}\n移動先のフルパス:{musicpass}\nフォルダごと持ってく:{temp2}\n取り消す場合はNキーを押してください。")
+        temp2 = "instのみ抽出"
+    elif(direct == 2):
+        temp2 = "voiceのみ抽出"
+    elif(direct == 3):
+        temp2 = "フォルダごと持っていく"
+    elif(direct == 4):
+        temp2 = "instとvoiceを一つのファイルにする"
+    ok = input(f"ーーーーーーーー\nmodデータのフルパス:{datapath}\n移動先のフルパス:{musicpass}\もってきかた:{temp2}\nフォルダ名に入っていたらスペースに置き換える文字:{replace}\n取り消す場合はNキーを押してください。")
     if(ok == "N" or ok == "n"):
         continue
     else:
@@ -67,23 +73,24 @@ def weeksfor(weekspath,songspath,musicpass):
 def songsfor(s,songspath,musicpass):
     global direct
     for fp in songspath.iterdir():
-        if(fp.name == s):
+        fpname = fp.name
+        if(replace):
+            pattern = f"{re.escape(replace)}(?!(side))"
+            nom = re.sub(pattern, " ", fpname, flags=re.IGNORECASE)
+        else :
+            nom = fp.name
+        if(nom == s):
             if(direct == 3):
-                shutil.copytree(fp,musicpass / f"---{songcounter}-{fp.name}")
+                shutil.copytree(fp,musicpass / f"---{songcounter}-{fpname}")
                 return
             else:
                 temp3 = "inst.ogg"
                 if(direct == 2 and os.path.isfile(fp / "voices.ogg")):
                     temp3 = "voices.ogg"
                 if(direct == 4 and os.path.isfile(fp / "voices.ogg")):
-                    audio1 = AudioSegment.from_ogg(fp /"inst.ogg")
-                    audio2 = AudioSegment.from_ogg(fp /"voices.ogg")
-                    mixed = audio1.overlay(audio2)
-                    mixed.export(fp / "mixed.ogg",format="ogg")
-                    temp3 = "mixed.ogg"
+                    "temp"
                 mp = fp / temp3
-                shutil.copy(mp,musicpass / f"---{songcounter}-{fp.name}.ogg")
-                return
+                shutil.copy(mp,musicpass / f"---{songcounter}-{fpname}.ogg")
 def noweeksfor(musicpass):
     print("temp")
 if(not os.path.isdir(weekspath)):
