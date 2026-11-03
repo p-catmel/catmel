@@ -87,7 +87,7 @@ def songsfor(s,songspath,musicpass):
                 temp3 = "inst.ogg"
                 if(direct == 2 and os.path.isfile(fp / "voices.ogg")):
                     temp3 = "voices.ogg"
-                if(direct == 4 and os.path.isfile(fp / "voices.ogg")):
+                if(direct == 4 and os.path.isfile(fp / "voices.ogg") and os.path.isfile(fp / "inst.ogg")):
                     "temp"
                 mp = fp / temp3
                 shutil.copy(mp,musicpass / f"---{songcounter}-{fpname}.ogg")
