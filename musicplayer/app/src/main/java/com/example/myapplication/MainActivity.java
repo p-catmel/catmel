@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
+import android.os.Environment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private File currsong = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {super.onCreate(savedInstanceState);
-        File datadir = new File(getFilesDir(),"musicdata");
+        File datadir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "musiclist");
         if(!datadir.exists()){
             boolean ok = datadir.mkdir();
         }
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         File[] songs = listname.listFiles();
         if(songs != null) {
             for (File file : songs) {
-                if (file.getName().startsWith("---" + current)) {
+                if (file.getName().startsWith("---" + current + "-") ) {
                     currsong = file;
                     found = true;
                     break;
@@ -71,6 +71,14 @@ public class MainActivity extends AppCompatActivity {
             });
         }catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 }
