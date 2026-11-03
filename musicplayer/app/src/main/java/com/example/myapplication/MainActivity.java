@@ -45,15 +45,21 @@ public class MainActivity extends AppCompatActivity {
         File[] songs = listname.listFiles();
         if(songs != null) {
             for (File file : songs) {
-                if (file.getName().startsWith("---" + current + "-") ) {
+                if (file.getName().startsWith("---" + current + "-")) {
                     currsong = file;
                     found = true;
                     break;
                 }
             }
-        }
-        if(found){
-            play(listname);
+            if (found) {
+                play(listname);
+            }
+            int len = songs.length;
+            if (!found && current > len) {
+                onDestroy();
+            } else if (!found) {
+                choocecurr(listname);
+            }
         }
     }
     private void play(File listname){
