@@ -41,25 +41,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void load(File listname) {
-        int i = 1;
-        int j = 0;
+        currindex = 0;
+        files.clear();
         boolean found = false;
+        int j = 0;
         File[] songs = listname.listFiles();
         if (songs != null) {
-            do {
+            for (int i = 1; j < songs.length; i++){
                 for (File file : songs) {
                     if (file.getName().startsWith("---" + i + "-")) {
                         files.add(file);
+                        j++;
                         found = true;
-                        i++;
+                        break;
                     }
-                    j++;
-                    if (!found && j == songs.length) {
-                        j = 0;
-                        i++;
-                    } else found = false;
                 }
-            } while (files.size() != songs.length);
+            }
         }
     }
     private void play(){
@@ -68,14 +65,10 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer = null;
         }
         try {
-            File currsong = files.get(currindex);
-            if(currindex > files.size()){
+            if(currindex >= files.size()){
                 return;
             }
-            else if(currsong == null){
-                currindex++;
-                play();
-            }
+            File currsong = files.get(currindex);
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(currsong.getAbsolutePath());
             mediaPlayer.prepare();
