@@ -23,8 +23,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private int currindex = 0;
-    private TextView state = findViewById(R.id.textView);
-    private TextView showcurrsong = findViewById(R.id.textView2);
+    private TextView state;
+    private TextView showcurrsong;
     private List<File> files = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {super.onCreate(savedInstanceState);
@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         }
         WindowCompat.enableEdgeToEdge(getWindow());
         setContentView(R.layout.activity_main);
+        state = findViewById(R.id.textView);
+        showcurrsong = findViewById(R.id.textView2);
         final EditText edittext = findViewById(R.id.editTextText);
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
