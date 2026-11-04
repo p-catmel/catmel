@@ -6,11 +6,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.os.Environment;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +23,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private int currindex = 0;
+    private TextView state = findViewById(R.id.textView);
+    private TextView showcurrsong = findViewById(R.id.textView2);
     private List<File> files = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {super.onCreate(savedInstanceState);
@@ -36,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 String input = edittext.getText().toString();
                 File listname = new File(datadir,input);
                 load(listname);
+                state.setText("再生中");
                 play();
             }
         });
@@ -66,9 +73,11 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if(currindex >= files.size()){
+                state.setText("終了");
                 return;
             }
             File currsong = files.get(currindex);
+            showcurrsong.setText(currsong.getName());
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(currsong.getAbsolutePath());
             mediaPlayer.prepare();
