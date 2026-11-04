@@ -14,11 +14,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.util.ArrayList;
+import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
-    private int current = 0;
-    private File currsong = null;
+    private int currindex = 0;
+    private List<File> files = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {super.onCreate(savedInstanceState);
         File datadir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "musiclist");
@@ -34,49 +35,58 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String input = edittext.getText().toString();
                 File listname = new File(datadir,input);
-
-                choocecurr(listname);
+                load(listname);
+                play();
             }
         });
     }
-    private void choocecurr(File listname){
-        current++;
+    private void load(File listname) {
+        int i = 1;
+        int j = 0;
         boolean found = false;
         File[] songs = listname.listFiles();
-        if(songs != null) {
-            for (File file : songs) {
-                if (file.getName().startsWith("---" + current + "-")) {
-                    currsong = file;
-                    found = true;
-                    break;
+        if (songs != null) {
+            do {
+                for (File file : songs) {
+                    if (file.getName().startsWith("---" + i + "-")) {
+                        files.add(file);
+                        found = true;
+                        i++;
+                    }
+                    j++;
+                    if (!found && j == songs.length) {
+                        j = 0;
+                        i++;
+                    } else found = false;
                 }
-            }
-            if (found) {
-                play(listname);
-            }
-            int len = songs.length;
-            if (!found && current > len) {
-                onDestroy();
-            } else if (!found) {
-                choocecurr(listname);
-            }
+            } while (files.size() != songs.length);
         }
     }
-    private void play(File listname){
+    private void play(){
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
         try {
+            File currsong = files.get(currindex);
+            if(currindex > files.size()){
+                return;
+            }
+            else if(currsong == null){
+                currindex++;
+                play();
+            }
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(currsong.getAbsolutePath());
             mediaPlayer.prepare();
             mediaPlayer.start();
             mediaPlayer.setOnCompletionListener(mp ->{
-                choocecurr(listname);
+                currindex++;
+                play();
             });
         }catch (IOException e) {
-            e.printStackTrace();
+            currindex++;
+            play();
         }
     }
     @Override
